@@ -1,6 +1,7 @@
 import pygame
 import random
 from random import randint
+from random import choice
 import math
 
 # Define some colors
@@ -25,12 +26,12 @@ class Ball:
         self.min_x = self.radius
 
     def randomize(self):
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
+        r = randint(0, 255)
+        g = randint(0, 255)
+        b = randint(0, 255)
         self.color = (r, g, b)
-        self.dx = random.randint(-3, 3)
-        self.dy = random.randint(-3, 3)
+        self.dx = randint(-3, 3)
+        self.dy = randint(-3, 3)
 
     def move(self):
         # minim = self.radius
@@ -44,7 +45,7 @@ class Ball:
             self.dy *= -1
 
     def draw(self, scr=screen):
-        scr.fill(BACKGROUND_COLOR)
+
         pygame.draw.circle(scr, self.color,
                            (self.x, self.y), self.radius)
 
@@ -58,18 +59,53 @@ class Player(Ball):
         self.color = (0, 0, 0)
         self.dx = 0
         self.dy = 0
+        self.max_x = SCREEN_WIDTH - self.radius
+        self.max_y = SCREEN_HEIGHT - self.radius
+        self.min_x = self.radius
 
     def move(self):
-        minim = self.radius
-        max_x = SCREEN_WIDTH - self.radius
-        max_y = SCREEN_HEIGHT - self.radius
-        self.x = constrain(minim, self.x + self.dx, max_x)
-        self.y = constrain(minim, self.y + self.dy, max_y)
+        # minim = self.radius
+        # max_x = SCREEN_WIDTH - self.radius
+        # max_y = SCREEN_HEIGHT - self.radius
+        self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
+        self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
+
+
+class SleepingBalls(Ball):
+    color = (250, 0, 0)
+    radius = 15
+
+    def __init__(self, x, y):
+        speed = randint(8, 12)
+        self.x = x
+        self.y = y
+        self.dx = choice((-1, 1)) * speed
+        self.dy = choice((-1, 1)) * speed
+        self.max_x = SCREEN_WIDTH - self.radius
+        self.max_y = SCREEN_HEIGHT - self.radius
+        self.min_x = self.radius
+
+    def move(self):
+        # minim = self.radius
+        # max_x = SCREEN_WIDTH - self.radius
+        # max_y = SCREEN_HEIGHT - self.radius
+        self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
+        self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
+        if self.x == self.max_x or self.x == self.min_x:
+            self.dx *= -1
+        if self.y == self.max_y or self.y == self.min_x:
+            self.dy *= -1
+
+    def sleep(self):
+        self.x = 0
+        self.y = 0
+
 
 
 def main():
     pygame.init()
 
+    counter = 0
     # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Balls")
 
@@ -79,6 +115,8 @@ def main():
     balls = []
 
     player = Player()
+
+    sleeping_balls = SleepingBalls(0, 0)
 
     for i in range(1, 5):
         balls.append(Ball(100 * i, 100 * i))
@@ -99,10 +137,13 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     done = True
                 elif event.key == pygame.K_r:
-                    balls[random.randint(0, len(balls) - 1)].randomize()
+                    balls[randint(0, len(balls) - 1)].randomize()
                 elif event.key == pygame.K_a:
                     balls.append(Ball(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
-                                      5 * random.randint(1, 10)))
+                                      5 * randint(1, 10)))
+                elif event.key == pygame.K_s:
+                    balls.append(SleepingBalls(0, 0))
+                    counter += 1
 
         player.dx = 0
         player.dy = 0
@@ -120,6 +161,10 @@ def main():
             ball.move()
 
         player.move()
+        #sleeping_balls.move()
+
+        if counter == 100:
+            sleeping_balls.sleep()
 
         # Draw everything
         screen.fill(BACKGROUND_COLOR)
@@ -131,6 +176,8 @@ def main():
         # pygame.draw.circle(screen, player.color,
         #                    (player.x, player.y), player.radius)
         player.draw()
+
+        #sleeping_balls.draw()
         # Update the screen
         pygame.display.flip()
 
