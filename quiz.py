@@ -1,5 +1,6 @@
 import random
 
+
 class Question:
     def __init__(self, question, answer):
         self.question = question
@@ -13,6 +14,7 @@ class Question:
         else:
             print(f"Sorry no. Correct answer: {self.answer}\n")
             return False
+
 
 class MCQuestion(Question):
     def __init__(self, question, answer, wrong_answers=[]):
@@ -36,6 +38,7 @@ class MCQuestion(Question):
 
     def add_wrong(self, wrong):
         self.wrong_answers.append(wrong)
+
 
 class Quiz:
     total = 0

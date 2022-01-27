@@ -4,6 +4,9 @@ from random import randint
 from random import choice
 import math
 
+from tkinter import *
+from tkinter import messagebox
+
 # Define some colors
 BACKGROUND_COLOR = (255, 255, 255)
 # BALL_COLOR = (0, 0, 0)
@@ -75,15 +78,18 @@ class SleepingBalls(Ball):
     color = (250, 0, 0)
     radius = 15
 
-    def __init__(self, x, y):
-        speed = randint(8, 12)
+    def __init__(self, x, y, sleep):
+        self.speed = randint(8, 12)
         self.x = x
         self.y = y
-        self.dx = choice((-1, 1)) * speed
-        self.dy = choice((-1, 1)) * speed
+        self.dx = choice((-1, 1)) * self.speed
+        self.dy = choice((-1, 1)) * self.speed
+        self.sleep = sleep
         self.max_x = SCREEN_WIDTH - self.radius
         self.max_y = SCREEN_HEIGHT - self.radius
         self.min_x = self.radius
+        # self.counter = counter
+
 
     def move(self):
         # minim = self.radius
@@ -96,15 +102,23 @@ class SleepingBalls(Ball):
         if self.y == self.max_y or self.y == self.min_x:
             self.dy *= -1
 
-    def sleep(self):
-        self.x = 0
-        self.y = 0
+    # def sleeping(self):
+    # #     # n = 1 - randint(0, 1)
+    # #     # if n > 0.7:
+    #     if self.dx != 0 and self.dy != 0:
+    #         self.counter += 1
+    #         # Tk().wm_withdraw()
+    #         # messagebox.showinfo('count', self.counter)
+    #     if self.counter == self.sleep:
+    #         self.speed = 0
+
+
 
 
 
 def main():
     pygame.init()
-
+    # counting the steps
     counter = 0
     # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Balls")
@@ -116,18 +130,17 @@ def main():
 
     player = Player()
 
-    sleeping_balls = SleepingBalls(0, 0)
+    sleeping_balls = SleepingBalls(0, 0, 100)
 
     for i in range(1, 5):
         balls.append(Ball(100 * i, 100 * i))
-
-    move_x, move_y = 0, 0
 
     # Loop until the user clicks the close button or ESC.
     done = False
     while not done:
         # Limit number of frames per second
         clock.tick(60)
+
 
         # Event Processing
         for event in pygame.event.get():
@@ -142,8 +155,12 @@ def main():
                     balls.append(Ball(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                       5 * randint(1, 10)))
                 elif event.key == pygame.K_s:
-                    balls.append(SleepingBalls(0, 0))
-                    counter += 1
+                    balls.append(SleepingBalls(0, 0, 100))
+
+        if sleeping_balls.dx != 0 and sleeping_balls.dy != 0:
+            counter += 1
+            Tk().wm_withdraw()
+            messagebox.showinfo('count', counter)
 
         player.dx = 0
         player.dy = 0
@@ -161,10 +178,7 @@ def main():
             ball.move()
 
         player.move()
-        #sleeping_balls.move()
-
-        if counter == 100:
-            sleeping_balls.sleep()
+        # sleeping_balls.move()
 
         # Draw everything
         screen.fill(BACKGROUND_COLOR)
@@ -177,7 +191,7 @@ def main():
         #                    (player.x, player.y), player.radius)
         player.draw()
 
-        #sleeping_balls.draw()
+        # sleeping_balls.draw()
         # Update the screen
         pygame.display.flip()
 
