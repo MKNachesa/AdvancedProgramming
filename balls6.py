@@ -1,11 +1,7 @@
 import pygame
-import random
 from random import randint
 from random import choice
-import math
 
-from tkinter import *
-from tkinter import messagebox
 
 # Define some colors
 BACKGROUND_COLOR = (255, 255, 255)
@@ -18,15 +14,15 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 class Ball:
-
     def __init__(self, x, y, radius=randint(20, 45)):
         self.x = x
         self.y = y
         self.radius = radius
         self.randomize()
-        self.max_x = SCREEN_WIDTH - self.radius
-        self.max_y = SCREEN_HEIGHT - self.radius
-        self.min_x = self.radius
+        self._max_x = SCREEN_WIDTH - self.radius
+        self._max_y = SCREEN_HEIGHT - self.radius
+        self._min_x = self.radius
+        
 
     def randomize(self):
         r = randint(0, 255)
@@ -35,89 +31,77 @@ class Ball:
         self.color = (r, g, b)
         self.dx = randint(-3, 3)
         self.dy = randint(-3, 3)
+        
 
     def move(self):
-        self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
-        self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
-        if self.x == self.max_x or self.x == self.min_x:
+        self.x = constrain(self._min_x, self.x + self.dx, self._max_x)
+        self.y = constrain(self._min_x, self.y + self.dy, self._max_y)
+        if self.x == self._max_x or self.x == self._min_x:
             self.dx *= -1
-        if self.y == self.max_y or self.y == self.min_x:
+        if self.y == self._max_y or self.y == self._min_x:
             self.dy *= -1
 
     def draw(self, scr=screen):
-
         pygame.draw.circle(scr, self.color,
                            (self.x, self.y), self.radius)
 
 
 class Player(Ball):
-
-    def __init__(self):
-        self.x = SCREEN_WIDTH // 2
-        self.y = SCREEN_HEIGHT // 2
-        self.radius = 10
+    def __init__(self, x, y, radius):
+        super().__init__(x, y, radius)
         self.color = (0, 0, 0)
         self.dx = 0
         self.dy = 0
-        self.max_x = SCREEN_WIDTH - self.radius
-        self.max_y = SCREEN_HEIGHT - self.radius
-        self.min_x = self.radius
 
-    def move(self):
-        self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
-        self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
 
 
 class SleepingBalls(Ball):
-    color = (250, 0, 0)
-    radius = 15
+    sleeping = 0
 
-    def __init__(self, x, y, steps_to_sleep, counter=0):
+    def __init__(self, x, y, radius):
+        super().__init__(x, y, radius)
         self.speed = randint(8, 12)
-        self.x = x
-        self.y = y
         self.dx = choice((-1, 1)) * self.speed
         self.dy = choice((-1, 1)) * self.speed
-        self.steps_to_sleep = steps_to_sleep
-        self.max_x = SCREEN_WIDTH - self.radius
-        self.max_y = SCREEN_HEIGHT - self.radius
-        self.min_x = self.radius
-        self.counter = counter
+        self.color = (250, 0, 0)
+        
+        self.min_x = self.radius        # works for both miniminum x and y
+        
+
+    def randomize(self):
+        pass
+    
 
     def move(self):
-        self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
-        self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
-        if self.x == self.max_x or self.x == self.min_x:
-            self.dx *= -1
-        if self.y == self.max_y or self.y == self.min_x:
-            self.dy *= -1
+        if self.sleeping > 0:
+            self.sleeping -= 1
+            if self.sleeping == 0:
+                self.dx = choice((-1, 1)) * self.speed
+                self.dy = choice((-1, 1)) * self.speed
+        else:
+            self.x = constrain(self._min_x, self.x + self.dx, self._max_x)
+            self.y = constrain(self._min_x, self.y + self.dy, self._max_y)
+            if self.x == self._max_x or self.x == self._min_x:
+                self.dx *= -1
+            if self.y == self._max_y or self.y == self._min_x:
+                self.dy *= -1
+            if randint(0,100) < 1:
+                self.sleeping = 100
 
-    def sleeping(self):
-        if self.dx != 0 or self.dy != 0:
-             self.counter += 1
-        if self.counter == self.steps_to_sleep:
-             self.speed = 0
-
+    
 
 
 def main():
     pygame.init()
-    # counting the steps
-    counter = 0
-    # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Balls")
 
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
 
     balls = []
+    player = Player(x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2, radius=10)
 
-    player = Player()
-
-    sleeping_balls = SleepingBalls(0, 0, 100)
-    sleeping_balls.sleeping()
-
-
+    
     for i in range(1, 5):
         balls.append(Ball(100 * i, 100 * i))
 
@@ -140,11 +124,7 @@ def main():
                     balls.append(Ball(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                       5 * randint(1, 10)))
                 elif event.key == pygame.K_s:
-                    balls.append(SleepingBalls(0, 0, 100))
-            # if sleeping_balls.dx != 0 or sleeping_balls.dy != 0:
-            #     counter += 1
-            # Tk().wm_withdraw()
-            # messagebox.showerror('counter', counter)
+                    balls.append(SleepingBalls(0, 0, 15))
 
         player.dx = 0
         player.dy = 0
@@ -162,20 +142,15 @@ def main():
             ball.move()
 
         player.move()
-        # sleeping_balls.move()
 
         # Draw everything
         screen.fill(BACKGROUND_COLOR)
 
         for ball in balls:
-            # pygame.draw.circle(screen, ball.color,
-            #                    (ball.x, ball.y), ball.radius)
             ball.draw()
-        # pygame.draw.circle(screen, player.color,
-        #                    (player.x, player.y), player.radius)
+
         player.draw()
 
-        # sleeping_balls.draw()
         # Update the screen
         pygame.display.flip()
 
@@ -185,7 +160,6 @@ def main():
 
 def constrain(small, value, big):
     """Return a new value which isn't smaller than small or larger than big"""
-    # TODO: Should use "small" as well.
     return max(min(value, big), small)
 
 
