@@ -9,11 +9,11 @@ from tkinter import messagebox
 
 # Define some colors
 BACKGROUND_COLOR = (255, 255, 255)
-# BALL_COLOR = (0, 0, 0)
+
 
 SCREEN_WIDTH = 700
 SCREEN_HEIGHT = 500
-# BALL_SIZE = 25
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
@@ -37,9 +37,6 @@ class Ball:
         self.dy = randint(-3, 3)
 
     def move(self):
-        # minim = self.radius
-        # max_x = SCREEN_WIDTH - self.radius
-        # max_y = SCREEN_HEIGHT - self.radius
         self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
         self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
         if self.x == self.max_x or self.x == self.min_x:
@@ -67,9 +64,6 @@ class Player(Ball):
         self.min_x = self.radius
 
     def move(self):
-        # minim = self.radius
-        # max_x = SCREEN_WIDTH - self.radius
-        # max_y = SCREEN_HEIGHT - self.radius
         self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
         self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
 
@@ -78,23 +72,19 @@ class SleepingBalls(Ball):
     color = (250, 0, 0)
     radius = 15
 
-    def __init__(self, x, y, sleep):
+    def __init__(self, x, y, steps_to_sleep, counter=0):
         self.speed = randint(8, 12)
         self.x = x
         self.y = y
         self.dx = choice((-1, 1)) * self.speed
         self.dy = choice((-1, 1)) * self.speed
-        self.sleep = sleep
+        self.steps_to_sleep = steps_to_sleep
         self.max_x = SCREEN_WIDTH - self.radius
         self.max_y = SCREEN_HEIGHT - self.radius
         self.min_x = self.radius
-        # self.counter = counter
-
+        self.counter = counter
 
     def move(self):
-        # minim = self.radius
-        # max_x = SCREEN_WIDTH - self.radius
-        # max_y = SCREEN_HEIGHT - self.radius
         self.x = constrain(self.min_x, self.x + self.dx, self.max_x)
         self.y = constrain(self.min_x, self.y + self.dy, self.max_y)
         if self.x == self.max_x or self.x == self.min_x:
@@ -102,17 +92,11 @@ class SleepingBalls(Ball):
         if self.y == self.max_y or self.y == self.min_x:
             self.dy *= -1
 
-    # def sleeping(self):
-    # #     # n = 1 - randint(0, 1)
-    # #     # if n > 0.7:
-    #     if self.dx != 0 and self.dy != 0:
-    #         self.counter += 1
-    #         # Tk().wm_withdraw()
-    #         # messagebox.showinfo('count', self.counter)
-    #     if self.counter == self.sleep:
-    #         self.speed = 0
-
-
+    def sleeping(self):
+        if self.dx != 0 or self.dy != 0:
+             self.counter += 1
+        if self.counter == self.steps_to_sleep:
+             self.speed = 0
 
 
 
@@ -131,6 +115,8 @@ def main():
     player = Player()
 
     sleeping_balls = SleepingBalls(0, 0, 100)
+    sleeping_balls.sleeping()
+
 
     for i in range(1, 5):
         balls.append(Ball(100 * i, 100 * i))
@@ -140,7 +126,6 @@ def main():
     while not done:
         # Limit number of frames per second
         clock.tick(60)
-
 
         # Event Processing
         for event in pygame.event.get():
@@ -156,11 +141,10 @@ def main():
                                       5 * randint(1, 10)))
                 elif event.key == pygame.K_s:
                     balls.append(SleepingBalls(0, 0, 100))
-
-        if sleeping_balls.dx != 0 and sleeping_balls.dy != 0:
-            counter += 1
-            Tk().wm_withdraw()
-            messagebox.showinfo('count', counter)
+            # if sleeping_balls.dx != 0 or sleeping_balls.dy != 0:
+            #     counter += 1
+            # Tk().wm_withdraw()
+            # messagebox.showerror('counter', counter)
 
         player.dx = 0
         player.dy = 0
