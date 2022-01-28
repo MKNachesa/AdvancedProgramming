@@ -1,6 +1,15 @@
 import random
 
 
+class Wrong:
+    appeared = 0
+    answered = 0
+    
+    def __init__(self, answer):
+        self.answer = answer
+
+
+
 class Question:
     def __init__(self, question, answer):
         self.question = question
@@ -17,12 +26,19 @@ class Question:
 
 
 class MCQuestion(Question):
+    SIZE_LIST = 4
+    wrong_ans_objs = []
+    
     def __init__(self, question, answer, wrong_answers=[]):
         super().__init__(question, answer)
+        for answer in wrong_answers:
+            wrong_ans_objs.append(Wrong(answer))
         self.wrong_answers = wrong_answers.copy()
 
     def ask_and_check(self):
-        options = self.wrong_answers + [self.answer]
+        random.shuffle(self.wrong_answers)
+        options = self.wrong_answers[:self.SIZE_LIST-1] + [self.answer]
+        #options = self.wrong_answers + [self.answer]
         random.shuffle(options)
         print(f"{self.question}")
         for i, option in enumerate(options):
