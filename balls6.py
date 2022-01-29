@@ -22,7 +22,6 @@ class Ball:
         self._max_x = SCREEN_WIDTH - self.radius
         self._max_y = SCREEN_HEIGHT - self.radius
         self._min_x = self.radius
-        
 
     def randomize(self):
         r = randint(0, 255)
@@ -31,7 +30,6 @@ class Ball:
         self.color = (r, g, b)
         self.dx = randint(-3, 3)
         self.dy = randint(-3, 3)
-        
 
     def move(self):
         self.x = constrain(self._min_x, self.x + self.dx, self._max_x)
@@ -54,7 +52,6 @@ class Player(Ball):
         self.dy = 0
 
 
-
 class SleepingBalls(Ball):
     sleeping = 0
 
@@ -66,11 +63,9 @@ class SleepingBalls(Ball):
         self.color = (250, 0, 0)
         
         self.min_x = self.radius        # works for both miniminum x and y
-        
 
     def randomize(self):
         pass
-    
 
     def move(self):
         if self.sleeping > 0:
@@ -85,10 +80,8 @@ class SleepingBalls(Ball):
                 self.dx *= -1
             if self.y == self._max_y or self.y == self._min_x:
                 self.dy *= -1
-            if randint(0,100) < 1:
+            if randint(0, 100) < 1:
                 self.sleeping = 100
-
-    
 
 
 def main():
@@ -101,7 +94,6 @@ def main():
     balls = []
     player = Player(x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2, radius=10)
 
-    
     for i in range(1, 5):
         balls.append(Ball(100 * i, 100 * i))
 
