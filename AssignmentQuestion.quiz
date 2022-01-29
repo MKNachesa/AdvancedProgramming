@@ -1,0 +1,64 @@
+name MayaAliQuiz
+
+q Who led the Argonauts in search of the Golden Fleece?
+a Jason
+
+q Which king commanded the Greek armies against Troy when Paris carried off Helen?
+a Agamemnon
+
+q What was the Universal Automatic Computer nicknamed?
+a Univac
+
+q Which type of canoe, now mostly used for sport, originated with the Inuit people of Greenland?
+a kayak
+
+q Which country’s parliament is known as the Knesset?
+a Israel
+
+q What is the capital of Mozambique?
+mca Maputo
+w Tete
+w Beira
+w Chimoio
+w Khorixas
+w Rundu
+w Windhoek
+w Cape Town
+
+q From the 16th century onward, the speed of a ship was measured by what English invention?
+mca log
+w pantograph
+w camera lucida
+w protractor
+w pictograph
+w natulius
+w recorder
+w knot
+
+q Which astronomer, mathematician, and geographer developed a geocentric (earth-centered) model of the universe?
+mca Ptolemy
+w Aryabhata
+w Aristotle
+w Hipparchus
+w Archimedes
+w Empedocles
+w Pliny the Elder
+
+q Which is an accurate, portable timekeeping device often used for determining longitude at sea?
+mca Chronometer
+w Henlein watch
+w hourglass
+w pendulum clock
+w bezel
+w escapement
+w chronograph
+
+q What simple measuring device is a semicircular disk graduated in degrees from 0 to 180?
+mca protractor
+w ruler
+w compass
+w abacus
+w sextant
+w backstaff
+w astrolabe
+
