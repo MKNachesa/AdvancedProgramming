@@ -2,12 +2,37 @@ import random
 
 
 class Wrong:
-    appeared = 0
-    answered = 0
-    
-    def __init__(self, answer):
-        self.answer = answer
+    wrong_ans_objs = []
+    ans_selected = {}
+    ans_offered = {}
 
+    def __init__(self, answer, score=0):
+        self.answer = answer
+        self.score = score
+
+    def add_wrong(self):
+        self.wrong_ans_objs.append(self.answer)
+
+    def selected(self):
+        for answer in self.wrong_ans_objs:
+            if answer in self.ans_selected:
+                self.ans_selected[answer] += 1
+            else:
+                self.ans_selected[answer] = 1
+
+    def offered(self):
+        for answer in self.wrong_ans_objs:
+            if answer in self.ans_offered:
+                self.ans_offered[answer] += 1
+            else:
+                self.ans_offered[answer] = 1
+
+    def displays_wrong(self):
+        for w_answer in self.wrong_ans_objs:
+            count = self.ans_selected[w_answer]
+            displayed = self.ans_offered[w_answer]
+            self.score = (2*count) + 1 / displayed + 1
+        return self.score
 
 
 class Question:
@@ -27,13 +52,13 @@ class Question:
 
 class MCQuestion(Question):
     SIZE_LIST = 4
-    wrong_ans_objs = []
-    
-    def __init__(self, question, answer, wrong_answers=[]):
+
+    def __init__(self, question, answer, wrong_answers_mc=[]):
         super().__init__(question, answer)
-        for answer in wrong_answers:
-            wrong_ans_objs.append(Wrong(answer))
-        self.wrong_answers = wrong_answers.copy()
+        self.wrong_answers_mc = wrong_answers_mc
+        for answer in wrong_answers_mc:
+            self.wrong_answers_mc.append(Wrong.add_wrong(answer))
+        self.wrong_answers = wrong_answers_mc.copy()
 
     def ask_and_check(self):
         random.shuffle(self.wrong_answers)
@@ -51,9 +76,6 @@ class MCQuestion(Question):
             corr = options.index(self.answer)+1
             print(f"Sorry no. Correct answer: {corr}\n")
             return False
-
-    def add_wrong(self, wrong):
-        self.wrong_answers.append(wrong)
 
 
 class Quiz:
@@ -105,6 +127,6 @@ def create_quiz_from_file(filename):
                 question = MCQuestion(text, data)
                 quiz.add_question(question)
             elif command == 'w':
-                question.add_wrong(data)
+                Wrong.add_wrong(data)
     return quiz
     
