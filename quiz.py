@@ -9,9 +9,13 @@ class Wrong:
     def __init__(self, answer, score=0):
         self.answer = answer
         self.score = score
+        self.add_wrong()
 
     def add_wrong(self):
-        self.wrong_ans_objs.append(self.answer)
+        Wrong.wrong_ans_objs.append(self.answer)
+        self.selected()
+        self.offered()
+        self.displays_wrong()
 
     def selected(self):
         for answer in self.wrong_ans_objs:
@@ -19,6 +23,7 @@ class Wrong:
                 self.ans_selected[answer] += 1
             else:
                 self.ans_selected[answer] = 1
+        # assert self.ans_selected[answer] <= 0, f"The answered is not yet selected"
 
     def offered(self):
         for answer in self.wrong_ans_objs:
@@ -26,12 +31,13 @@ class Wrong:
                 self.ans_offered[answer] += 1
             else:
                 self.ans_offered[answer] = 1
+        # assert self.ans_offered[answer] <= 0, f"The answered is not displayed selected"
 
     def displays_wrong(self):
         for w_answer in self.wrong_ans_objs:
             count = self.ans_selected[w_answer]
             displayed = self.ans_offered[w_answer]
-            self.score = (2*count) + 1 / displayed + 1
+            self.score = (2 * count) + 1 / displayed + 1
         return self.score
 
 
@@ -57,23 +63,23 @@ class MCQuestion(Question):
         super().__init__(question, answer)
         self.wrong_answers_mc = wrong_answers_mc
         for answer in wrong_answers_mc:
-            self.wrong_answers_mc.append(Wrong.add_wrong(answer))
-        self.wrong_answers = wrong_answers_mc.copy()
+            self.wrong_answers_mc.append(Wrong(answer))
+        self.wrong_answers_mc = wrong_answers_mc.copy()
 
     def ask_and_check(self):
-        random.shuffle(self.wrong_answers)
-        options = self.wrong_answers[:self.SIZE_LIST-1] + [self.answer]
-        #options = self.wrong_answers + [self.answer]
+        random.shuffle(self.wrong_answers_mc)
+        options = self.wrong_answers_mc[:self.SIZE_LIST - 1] + [self.answer]
+        # options = self.wrong_answers + [self.answer]
         random.shuffle(options)
         print(f"{self.question}")
         for i, option in enumerate(options):
-            print(f"{i+1}: {option}")
+            print(f"{i + 1}: {option}")
         response = input("Which is your answer? ")
-        if options[int(response)-1] == self.answer:
+        if options[int(response) - 1] == self.answer:
             print("Correct!\n")
             return True
         else:
-            corr = options.index(self.answer)+1
+            corr = options.index(self.answer) + 1
             print(f"Sorry no. Correct answer: {corr}\n")
             return False
 
@@ -81,7 +87,7 @@ class MCQuestion(Question):
 class Quiz:
     total = 0
     num_correct = 0
-    
+
     def __init__(self, name, questions=[]):
         self.name = name
         self.questions = questions
@@ -93,10 +99,10 @@ class Quiz:
         self.total = len(self.questions)
         self.num_correct = 0
         print(self.name)
-        print(f"{'='*len(self.name)}\n")
+        print(f"{'=' * len(self.name)}\n")
         for question in self.questions:
             response = question.ask_and_check()
-            if response == True:
+            if response is True:
                 self.num_correct += 1
 
         print(f"You answered {self.num_correct} out of {self.total} correctly.\n")
@@ -129,4 +135,3 @@ def create_quiz_from_file(filename):
             elif command == 'w':
                 Wrong.add_wrong(data)
     return quiz
-    
