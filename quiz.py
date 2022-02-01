@@ -100,7 +100,7 @@ class Quiz:
 
     def __init__(self, name, questions=[]):
         self.name = name
-        self.questions = questions
+        self.questions = questions.copy()
 
     def add_question(self, question):
         self.questions.append(question)
