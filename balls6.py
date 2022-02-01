@@ -14,10 +14,13 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 class Ball:
-    def __init__(self, x, y, radius=randint(20, 45)):
+    def __init__(self, x, y, radius=None): # hoping the user won't enter None
         self.x = x
         self.y = y
-        self.radius = radius
+        if radius == None:
+            self.radius = 5 * randint(1, 10)
+        else:
+            self.radius = radius
         self.randomize()
         self._max_x = SCREEN_WIDTH - self.radius
         self._max_y = SCREEN_HEIGHT - self.radius
@@ -61,8 +64,6 @@ class SleepingBalls(Ball):
         self.dx = choice((-1, 1)) * self.speed
         self.dy = choice((-1, 1)) * self.speed
         self.color = (250, 0, 0)
-        
-        self.min_x = self.radius        # works for both miniminum x and y
 
     def randomize(self):
         pass
