@@ -16,8 +16,8 @@ class Wrong:
                 self.ans_selected[answer] += 1
             else:
                 self.ans_selected[answer] = 1
-        # assert self.ans_selected[answer] <= 0, f"The answered is not yet selected"
 
+        
     def offered(self, wrong_ans_objs):
         self.wrong_ans_objs = wrong_ans_objs
         for answer in self.wrong_ans_objs:
@@ -25,8 +25,8 @@ class Wrong:
                 self.ans_offered[answer] += 1
             else:
                 self.ans_offered[answer] = 1
-        # assert self.ans_offered[answer] <= 0, f"The answered is not displayed selected"
 
+        
     def calculate_score(self):
         self.score = (2 * self.ans_selected + 1) / (self.ans_offered + 1)
 
@@ -54,15 +54,18 @@ class MCQuestion(Question):
     def __init__(self, question, answer, wrong_answers_mc=[]):
         super().__init__(question, answer)
         self.wrong_answers_mc = wrong_answers_mc.copy()
-        for answer in wrong_answers_mc:
+        self.wrong_ans_objs = self.wrong_ans_objs.copy()
+        for answer in self.wrong_answers_mc:
             self.wrong_ans_objs.append(Wrong(answer))
 
     def displays_wrong(self):
         for w in self.wrong_ans_objs:
             w.calculate_score()
 
-        self.ans_to_offer = [ans for ans in sorted(self.wrong_ans_objs, key=lambda item: item.score,
-                                                   reverse=True)][:self.SIZE_LIST-1] # + [self.answer]
+        self.ans_to_offer = [ans for ans in sorted(self.wrong_ans_objs,
+                                                   key=lambda item: item.score,
+                                                   reverse=True)
+                             ][:self.SIZE_LIST-1]
         for ans in self.ans_to_offer:
             ans.ans_offered += 1
 
@@ -79,13 +82,12 @@ class MCQuestion(Question):
             print("Correct!\n")
             return True
         else:
-            corr = self.ans_to_offer.index(self.answer) + 1
+            wrong = self.ans_to_offer[int(response)-1]
             for wrong_ans in self.wrong_ans_objs:
-                if wrong_ans.answer == self.answer:
-                    wrong_ans.ans_offered += 1
+                if wrong_ans.answer == wrong:
+                    wrong_ans.ans_selected += 1
                     break
-
-            print(f"Sorry no. Correct answer: {corr}\n")
+            print(f"Sorry no. Correct answer: {self.answer}\n")
             return False
 
     def add_wrong(self, wrong):
@@ -141,6 +143,5 @@ def create_quiz_from_file(filename):
                 question = MCQuestion(text, data)
                 quiz.add_question(question)
             elif command == 'w':
-                Wrong(data)
-                #wrong.add_wrong(data)
+                question.add_wrong(data)
     return quiz
