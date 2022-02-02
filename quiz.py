@@ -17,7 +17,6 @@ class Wrong:
             else:
                 self.ans_selected[answer] = 1
 
-        
     def offered(self, wrong_ans_objs):
         self.wrong_ans_objs = wrong_ans_objs
         for answer in self.wrong_ans_objs:
@@ -26,7 +25,6 @@ class Wrong:
             else:
                 self.ans_offered[answer] = 1
 
-        
     def calculate_score(self):
         self.score = (2 * self.ans_selected + 1) / (self.ans_offered + 1)
 
